@@ -1,48 +1,14 @@
 <!--Coded by Sai Tanay Desaraju-->
-<!-- 07/21/19 -->
+<!-- 07/22/19 -->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>UTD Grades</title>
+    <title>UT Dallas Grades</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <style>
-        html, body{
-            height: 100vh;
-            width: 100vw;
-        }
-        .form-control:focus{
-            box-shadow: 0 0 0 0.2rem rgba(248,249,250,.5);
-        }
-        #main-container, #main-row, #left-bar{
-            min-height: 100vh;
-        }
-        .class-info-card:hover{
-            opacity: 0.9;
-        }
-
-        @media screen and (min-width: 768px){
-            html, body{
-                max-height: 100vh;
-                max-width: 100vw;
-            }
-            #main-container, #main-row, #left-bar{
-                max-height: inherit!important;
-            }
-        }
-
-        /*Scroll bar*/
-
-        #search-results::-webkit-scrollbar{
-            width: 8px;
-        }
-        #search-results::-webkit-scrollbar-thumb{
-            border-radius: 10px;
-            background-color: white;
-        }
-    </style>
+    <link rel="stylesheet" href="./styles/style.css">
     <script src="./scripts/jquery-3.4.1.min.js"></script>
 </head>
 <body>
@@ -51,7 +17,7 @@
             <!--Left Bar-->
             <div id="left-bar" class="col-lg-4 col-md-5 col-12 bg-dark d-md-flex flex-md-column">
                 <!-- Search Bar-->
-                <div class="input-group p-0 p-md-2 mt-3 flex-grow-0" id="search-input-group" style="position: sticky; top:0; z-index:1">
+                <div class="input-group p-2 mt-3 flex-grow-0" id="search-input-group" style="position: sticky; top:0; z-index:1">
                     <input class="form-control border-white" id="search-subj" autocapitalize="characters" onkeyup="querySubmit();" style="width: 17%; text-transform:uppercase;" type="text" placeholder="CS">
                     <input class="form-control border-white" id="search-num" onkeyup="querySubmit();" style="width: 17%;" type="text" placeholder="1337">
                     <input class="form-control border-white" id="search-sect" onkeyup="querySubmit();" style="width: 17%;" type="text" placeholder="001">
@@ -73,12 +39,19 @@
             </div>
             <!-- Main Chart Div -->
             <div class="col-lg-8 col-md-7 col-12 bg-light d-md-flex flex-column" style="display: none;" id="right_area_container">
-                <div class="d-flex flex-row justify-content-center">
-                    <button type="button" id="btn_back" class="btn btn-light btn-outline-secondary btn-sm rounded-pill float-left pl-2 pr-2 m-2 flex-grow-0" style="display: none">Back</button>
-                    <button type="button" id="btn_rmp" class="btn btn-light btn-outline-secondary btn-sm rounded-pill pl-2 pr-2 m-2 flex-grow-0" style="display: none">RMP Search</button>
-                    <button type="button" id="btn_reddit" class="btn btn-light btn-outline-secondary btn-sm rounded-pill pl-2 pr-2 m-2 flex-grow-0 align-self-end" style="display: none">UTD Reddit Search</button>
+                <h2 id="hint-text" class="text-center text-wrap" style="color: #8e9195; position: absolute; top:40vh; width: calc(100% - 15px)">Search for a class on the left and choose a result!</h2>
+                <div class="d-flex flex-row justify-content-end">
+                   <button type="button" id="btn_back" class="btn btn-sm btn-light btn-outline-secondary btn-sm rounded-pill float-left pl-2 pr-2 m-2" style="display: none">Go Back</button>
+                    <div class="flex-grow-1"></div>
+                    <button type="button" id="btn_rmp" class="btn btn-sm btn-light btn-outline-secondary btn-sm rounded-pill pl-2 pr-2 m-2" style="display: none">RMP</button>
+                    <button type="button" id="btn_reddit" class="btn btn-sm btn-light btn-outline-secondary btn-sm rounded-pill pl-2 pr-2 m-2" style="display: none">Reddit</button>
+                    <button type="button" id="btn_share" class="btn btn-sm btn-light btn-outline-secondary btn-sm rounded-pill pl-2 pr-2 m-2" style="display: none;" data-toggle="popover" data-container="body" data-placement="bottom" title="Share this link!" data-content="">Share</button>
                 </div>
-                <div class="flex-grow-1" id="main-chart"></div>
+                <div class="flex-grow-1 flex-shrink-1" style="max-height: 100vw;" id="main-chart"></div>
+                <div class="text-center text-black-50 small"><p>Designed by <a href="https://www.linkedin.com/in/saitanayd/" target="_blank">Sai</a>. Data provided by <a href="https://www.utdmercury.com/" target="_blank">The Mercury</a>.
+                    Thanks to <a href="https://garrettgu.com/" target="_blank">Garrett Gu</a>, <a href="https://jeffw.xyz/" target="_blank">Jeffrey Wang</a>, <a href="https://www.linkedin.com/in/josephwickline/" target="_blank">Joseph Wickline</a> and
+                    <span style="text-decoration: underline;" data-toggle="tooltip" data-html="true" title="Thank you to the following people for donating and making this possible (in order of most monetary support): Anthony-Tien Huynh, Adam Butcher, Paul Denino, Thomas Sowders, Xavier Brown, Enza Denino, David Garvin, Alastair Feille, Andrew Vaccaro and other anonymous donors."> our donors</span>.</p>
+                </div>
             </div>
         </div>
     </div>
