@@ -14,23 +14,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>UT Dallas Grades</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="./styles/bootstrap.min.css">
     <link rel="stylesheet" href="./styles/style.css">
-    <script src="./scripts/jquery-3.4.1.min.js"></script>
 </head>
 <body>
-    <div id="main-container" class="container-fluid">
+    <!--Only displayed while the rest of the website is loading-->
+    <div class="vw-100 vh-100 align-items-center justify-content-center" id="loading-spinner" style="display: flex;">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!--The container that has the main web page-->
+    <div id="main-container" class="container-fluid" style="display: none;">
         <div id="main-row" class="row">
             <!--Left Bar-->
-            <div id="left-bar" class="col-lg-4 col-md-5 col-12 bg-dark d-md-flex flex-md-column">
+            <div id="left-bar" class="col-lg-4 col-md-5 col-12 pb-4 bg-dark d-md-flex flex-md-column">
                 <!-- Search Bar-->
                 <div class="input-group p-2 mt-3 flex-grow-0 bg-dark sticky-top" id="search-input-group">
-                    <input class="form-control border-white" id="search-subj" autocapitalize="characters" onkeyup="querySubmit();" style="width: 17%; text-transform:uppercase;" type="text" placeholder="CS">
-                    <input class="form-control border-white" id="search-num" onkeyup="querySubmit();" style="width: 17%;" type="text" placeholder="1337">
-                    <input class="form-control border-white" id="search-sect" onkeyup="querySubmit();" style="width: 17%;" type="text" placeholder="001">
-                    <input class="form-control border-white" id="search-prof" onkeyup="querySubmit();" style="width: 33%;" type="text" placeholder="Jason Smith">
-                    <button class="btn btn-dark btn-outline-light dropdown-toggle" value="All" id="search-term" style="width: 16%;
-                     border-bottom-left-radius: 0px; border-top-left-radius: 0px" type="button" data-toggle="dropdown">All</button>
+                    <input class="form-control border-white" id="search-subj" autocapitalize="characters" onkeyup="refreshResults();" style="width: 17%; text-transform:uppercase;" type="text" placeholder="CS">
+                    <input class="form-control border-white" id="search-num" onkeyup="refreshResults();" style="width: 17%;" type="text" placeholder="1337">
+                    <input class="form-control border-white" id="search-sect" onkeyup="refreshResults();" style="width: 17%;" type="text" placeholder="001">
+                    <input class="form-control border-white" id="search-prof" onkeyup="refreshResults();" style="width: 25%;" type="text" placeholder="Jason Smith">
+                    <button class="btn btn-dark btn-outline-light rounded-0 dropdown-toggle" value="All" id="search-term" style="width: 15%; border-bottom-left-radius: 0px; border-top-left-radius: 0px" type="button" data-toggle="dropdown">All</button>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" value="All" href="#">All</a>
                         <div role="separator" class="dropdown-divider"></div>
@@ -40,36 +45,56 @@
                         <a class="dropdown-item" value="18s" href="#">Spring 2018</a>
                         <a class="dropdown-item" value="17f" href="#">Fall 2017</a>
                     </div>
+                    <div class="input-group-append" style="width: 9%;">
+                        <div class="input-group-text bg-dark border-white rounded-right">
+                            <input type="checkbox" id="search-selectAll">
+                        </div>
+                    </div>
                 </div>
                 <!-- Search Results-->
-                <div id="search-results" class="m-2 mb-4 overflow-auto"></div>
+                <div id="search-results" class="m-2 overflow-auto"></div>
+                <div id="selected-box" class="m-2 flex-shrink-0" style="display: none;">
+                    <div class="card flex flex-row align-items-stretch w-100 overflow-hidden">
+                        <div id="selected-box-content" class="flex-grow-1 overflow-auto flex flex-row align-items-stretch">
+                            <!--    Flex block to show the selected items-->
+                        </div>
+                        <div class="flex-grow-0 bg-dark border-left border-right d-flex justify-content-center align-items-center" onclick="refreshSelectedBox(-1)">
+                            <p class="text-white m-3 m-md-2">Add</p>
+                        </div>
+                        <div id="selected-box-merge" class="flex-grow-0 bg-dark border-right d-flex justify-content-center align-items-center" onclick="refreshSelectedBox(-2)">
+                            <p class="text-white m-3 m-md-2">Merge and Add</p>
+                        </div>
+                        <div id="selected-box-clear" class="flex-grow-0 bg-danger d-flex justify-content-center align-items-center" onclick="refreshSelectedBox(-3)">
+                            <p class="text-white m-3 m-md-2">Clear</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             <!-- Main Chart Div -->
-            <div class="col-lg-8 col-md-7 col-12 bg-light d-md-flex flex-column" style="display: none;" id="right_area_container">
-                <h2 id="hint-text" class="text-center text-wrap" style="color: #8e9195; position: absolute; top:40vh; width: calc(100% - 15px)">Search for a class on the left and choose a result!</h2>
+            <div class="col-lg-8 col-md-7 col-12 bg-light vh-100 flex-column" id="right_area_container">
+                <h2 id="hint-text" class="text-center text-wrap" style="color: #8e9195; position: absolute; top:40vh; width: calc(100% - 15px);">Search for a class on the left and choose a result!</h2>
                 <div class="d-flex flex-row justify-content-end">
                    <button type="button" id="btn_back" class="btn btn-sm btn-light btn-outline-secondary btn-sm rounded-pill float-left pl-2 pr-2 m-2" style="display: none">Go Back</button>
+                    <button type="button" id="btn_clear_chart" class="btn btn-sm btn-light btn-outline-secondary btn-sm rounded-pill float-left pl-2 pr-2 m-2" style="display: none">Clear</button>
                     <div class="flex-grow-1"></div>
                     <button type="button" id="btn_rmp" class="btn btn-sm btn-light btn-outline-secondary btn-sm rounded-pill pl-2 pr-2 m-2" style="display: none">RMP</button>
                     <button type="button" id="btn_reddit" class="btn btn-sm btn-light btn-outline-secondary btn-sm rounded-pill pl-2 pr-2 m-2" style="display: none">Reddit</button>
-                    <button type="button" id="btn_share" class="btn btn-sm btn-light btn-outline-secondary btn-sm rounded-pill pl-2 pr-2 m-2" style="display: none;" data-toggle="popover" data-container="body" data-placement="bottom" title="Share this link!" data-content="">Share</button>
+                    <button type="button" id="btn_share" class="btn btn-sm btn-light btn-outline-secondary btn-sm rounded-pill pl-2 pr-2 m-2" style="display: none; user-select: all;" data-toggle="popover" data-container="body" data-placement="bottom" title="Share this link!" data-content="">Share</button>
                 </div>
-                <div class="flex-grow-1 flex-shrink-1" style="max-height: 100vw;" id="main-chart"></div>
-                <div class="text-center text-black-50 mb-2 small"><p class="mb-1">Designed by <a href="https://www.linkedin.com/in/saitanayd/" target="_blank">Sai Desaraju</a>. Data obtained from <a href="https://www.utdmercury.com/" target="_blank">The Mercury</a>.
+                <div class="flex-grow-1 flex-shrink-1" style="max-height: 100vw; min-height: 0px;" id="main-chart"></div>
+                <div class="text-center text-black-50 mb-2 small">
+                    <p class="mb-1">Designed by <a href="https://www.linkedin.com/in/saitanayd/" target="_blank">Sai Desaraju</a>. Data obtained from <a href="https://www.utdmercury.com/" target="_blank">The Mercury</a>.
                     Thanks to <a href="https://garrettgu.com/" target="_blank">Garrett Gu</a>, <a href="https://jeffw.xyz/" target="_blank">Jeffrey Wang</a>, <a href="https://www.linkedin.com/in/josephwickline/" target="_blank">Joseph Wickline</a> and
                     <span style="text-decoration: underline;" data-toggle="tooltip" data-html="true" title="Thank you to the following people for donating to pay for the grade distribution data (in order of most monetary support): Anthony-Tien Huynh, Adam Butcher, Paul Denino, Thomas Sowders, Xavier Brown, Enza Denino, David Garvin, Alastair Feille, Andrew Vaccaro and other anonymous donors."> other donors</span>.</p>
                     <p class="mb-1" id="extension_footer" style="display: none"><a href="https://chrome.google.com/webstore/detail/better-coursebook-ut-dall/bjkondedbcbdebddkimflhiehecncoaf", target="_blank">Check out</a> my Chrome extension for UT Dallas CourseBook (trust me, you'll love it)!</p>
                 </div>
-                <script>
-                    if(/Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor))
-                        $("#extension_footer").css("display", "block");
-                </script>
             </div>
         </div>
     </div>
+    <script src="./scripts/jquery-3.4.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="https://code.highcharts.com/highcharts.src.js"></script>
+    <script src="./scripts/highcharts.src.js"></script>
     <script src="./scripts/utdgrades.min.js"></script>
 </body>
 </html>
