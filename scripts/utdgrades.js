@@ -1,6 +1,7 @@
 /* 
  *  Coded by Sai Tanay Desaraju.
  *  08/01/19.
+ *  TODO: Add the append function.
  */
 
 const resJQ = $("#search-results"); // The element that displays the search results.
